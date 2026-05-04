@@ -8,8 +8,9 @@ class NeighbourMatrix {
     int edges;
     int** matrix;
     void build_matrix() {
+        matrix = new int* [vertexes];
         for (int i = 0; i < vertexes; i++) {
-            matrix[i] = new int[edges]();
+            matrix[i] = new int[vertexes]();
         }
     }
 public:
@@ -21,9 +22,13 @@ public:
             delete[] matrix[i];
         delete[] matrix;
     }
+    void add_incidence(int predecessor, int successor) { matrix[predecessor][successor] = 1; }
     void display() {
-        for (int i = 0; i < vertexes) {
-
+        for (int i = 0; i < vertexes; i++) {
+            for (int j = 0; j < vertexes; j++) {
+                std::cout << matrix[i][j] << ' ';
+            }
+            std::cout << '\n';
         }
     }
 };
@@ -35,7 +40,13 @@ class AdjacencyList {
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    int n, m;
+    std::cin >> n >> m;
+    NeighbourMatrix matrix(n, m);
+    while (std::cin >> n >> m) {
+        matrix.add_incidence(n, m);
+    }
+    matrix.display();
 }
 
 // Uruchomienie programu: Ctrl + F5 lub menu Debugowanie > Uruchom bez debugowania
