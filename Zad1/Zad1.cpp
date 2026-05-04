@@ -31,6 +31,16 @@ public:
             std::cout << '\n';
         }
     }
+
+    void display_as_AList() {
+        for (int i = 0; i < vertexes; i++) {
+            std::cout << i << ':';
+            for (int j = 0; j < vertexes; j++)
+                if (matrix[i][j])
+                    std::cout << ' ' << j;
+            std::cout << '\n';
+        }
+    }
 };
 
 class AdjacencyList {
@@ -46,6 +56,8 @@ int main()
     while (std::cin >> n >> m) {
         matrix.add_incidence(n, m);
     }
+    matrix.display_as_AList();
+    std::cout << '\n';
     matrix.display();
 }
 
