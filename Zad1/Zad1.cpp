@@ -1,12 +1,13 @@
 ﻿#include <iostream>
 #include <vector>
 enum colors {WHITE, GRAY, BLACK};
-bool DFS_flag;
 
 class NeighbourMatrix {
     int vertexes;
     std::vector<std::vector<int>> matrix;
     bool directed;
+
+    bool DFS_flag;
 
     void build_matrix() {
         matrix.resize(vertexes, std::vector<int>(vertexes, 0));
@@ -56,7 +57,8 @@ protected:
 
         }
         V[v] = BLACK;
-    }    //void display_as_AList() {
+    }
+    //void display_as_AList() {
     //    for (int i = 0; i < vertexes; i++) {
     //        std::cout << i << ':';
     //        for (int j = 0; j < vertexes; j++)
@@ -69,16 +71,26 @@ protected:
 
 class AdjacencyList {
     std::vector<std::vector<int>> list;
+    int vertexes;
+
+    bool DFS_flag;
 
 public:
-    AdjacencyList(NeighbourMatrix& matrix) {
-        list.resize(matrix.get_vertexes_number());
-        for (int i = 0; i < matrix.get_vertexes_number(); i++) {
-            for (int j = 0; j < matrix.get_vertexes_number(); j++) {
-                if (matrix.at(i,j))
-                    list.at(i).push_back(j);
+    AdjacencyList(NeighbourMatrix& matrix) : vertexes(matrix.get_vertexes_number()){
+        list.resize(vertexes);
+        for (int i = 0; i < vertexes; i++) {
+            for (int j = 0; j < vertexes; j++) {
+                if (matrix.at(i, j))
+                    for (int k = 0; k < matrix.at(i, j); k++)
+                        list.at(i).push_back(j);
             }
         }
+    }
+    AdjacencyList(int v) :vertexes(v) { list.resize(vertexes); }
+    void add_edge(int n, int m) {
+        n--, m--;
+        list.at(n).push_back(m);
+        list.at(m).push_back(n);
     }
     void display() {
         for (int i = 0; i < list.size(); i++) {
@@ -88,6 +100,33 @@ public:
             std::cout << '\n';
         }
     }
+    void DFS() {
+        std::vector<colors> V(vertexes, WHITE);
+        DFS_flag = false;
+        DFS_visit(0, V);
+        for (int i = 0; i < vertexes; i++)
+            if (V[i] == WHITE)
+                DFS_flag = true;
+        std::cout << (DFS_flag ? "NO" : "YES");
+    }
+protected:
+    void DFS_visit(int v, std::vector<colors>& V, int parent = -1) {
+        V[v] = GRAY;
+        for (int i = 0; i < list.at(v).size(); i++) {
+            if (list[v][i] != parent)
+                if (V[list[v][i]] == WHITE) {
+                    DFS_visit(list[v][i], V, v);
+                    if (DFS_flag) break;
+                }
+                else {
+                    DFS_flag = true;
+                    break;
+                }
+
+        }
+        V[v] = BLACK;
+    }
+
 };
 
 
@@ -97,13 +136,16 @@ int main()
     int n, m;
     std::cin >> n >> m;
     NeighbourMatrix matrix(n, m, false);
+    AdjacencyList Alist(n);
     while (std::cin >> n >> m) {
-        matrix.add_incidence(n, m);
+        //matrix.add_incidence(n, m);
+        Alist.add_edge(n, m);
     }
     //AdjacencyList Alist(matrix);
-    matrix.DFS();
+    Alist.DFS();
+    //matrix.DFS();
     //Alist.display();
     //std::cout << '\n';
-    matrix.display();
+    //matrix.display();
 }
 
