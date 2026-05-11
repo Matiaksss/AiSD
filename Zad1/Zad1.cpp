@@ -136,14 +136,14 @@ int main()
     int n, m;
     std::cin >> n >> m;
     NeighbourMatrix matrix(n, m, false);
-    AdjacencyList Alist(n);
+    //AdjacencyList Alist(n);
     while (std::cin >> n >> m) {
-        //matrix.add_incidence(n, m);
-        Alist.add_edge(n, m);
+        matrix.add_incidence(n, m);
+        //Alist.add_edge(n, m);
     }
     //AdjacencyList Alist(matrix);
-    Alist.DFS();
-    //matrix.DFS();
+    //Alist.DFS();
+    matrix.DFS();
     //Alist.display();
     //std::cout << '\n';
     //matrix.display();
