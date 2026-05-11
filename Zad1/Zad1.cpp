@@ -48,8 +48,8 @@ public:
     NeighbourMatrix(int n, int m, bool directed = true) : vertexes(n), directed(directed) { build_matrix(); }
     NeighbourMatrix(int n, bool directed = true) : vertexes(n), directed(directed) { build_matrix(); }
     void add_incidence(int predecessor, int successor) {
-        predecessor--;
-        successor--;
+        //predecessor--;
+        //successor--;
         matrix[predecessor][successor]++;
         if (!directed)
             matrix[successor][predecessor]++;
@@ -61,6 +61,7 @@ public:
             }
             std::cout << '\n';
         }
+        std::cout << '\n';
     }
     int get_vertexes_number() { return vertexes; }
     int at(int n, int m) { return matrix[n][m]; }
@@ -89,6 +90,37 @@ protected:
 
         }
         V[v] = BLACK;
+    }
+public:
+    void Khan_topology() {
+        std::vector<int> in_degree(vertexes, 0);
+        FIFO<int> queue;
+        std::vector<int> result;
+        for (int v = 0; v < vertexes; v++) {
+            for (int i = 0; i < vertexes; i++) {
+                in_degree[v]+=matrix[i][v];
+            }
+        }
+        for (int i = 0; i < vertexes; i++) {
+            if (in_degree[i] == 0) {
+                queue.push(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int v = queue.pop();
+            for (int i = 0; i < vertexes; i++) {
+                if (matrix[v][i] > 0) {
+                    in_degree[i] -= matrix[v][i];
+                    if (in_degree[i] == 0)
+                        queue.push(i);
+                }
+            }
+            result.push_back(v);
+        }
+        for (int i = 0; i < result.size(); i++)
+            std::cout << result.at(i) << ' ';
+    
+    
     }
     //void display_as_AList() {
     //    for (int i = 0; i < vertexes; i++) {
@@ -120,9 +152,12 @@ public:
     }
     AdjacencyList(int v) :vertexes(v) { list.resize(vertexes); }
     void add_edge(int n, int m) {
-        n--, m--;
+        //n--, m--;
         list.at(n).push_back(m);
         list.at(m).push_back(n);
+    }
+    void add_arc(int n, int m) {
+        list.at(n).push_back(m);
     }
     void display() {
         for (int i = 0; i < list.size(); i++) {
@@ -141,6 +176,16 @@ public:
                 DFS_flag = true;
         std::cout << (DFS_flag ? "NO" : "YES");
     }
+    void DFS_topology() {
+        std::vector<colors> V(vertexes, WHITE);
+        std::vector<int> result;
+        for (int i = 0; i < vertexes; i++)
+            if (V[i] == WHITE)
+                DFSt_visit(i, V, result);
+        for (int i = result.size() - 1; i >= 0; i--) {
+            std::cout << result[i] << ' ';
+        }
+    }
 protected:
     void DFS_visit(int v, std::vector<colors>& V, int parent = -1) {
         V[v] = GRAY;
@@ -157,6 +202,16 @@ protected:
 
         }
         V[v] = BLACK;
+    }
+    void DFSt_visit(int v, std::vector<colors>& V, std::vector<int>& result) {
+        V[v] = GRAY;
+        for (int i = 0; i < list.at(v).size(); i++) {
+            if (V[list[v][i]] == WHITE) {
+                DFSt_visit(list[v][i], V, result);
+            }
+        }
+        V[v] = BLACK;
+        result.push_back(v);
     }
 public:
     void BFS(int start, int end) {
@@ -191,19 +246,22 @@ public:
 int main()
 {
     int n, m, o, p;
-    std::cin >> n >> m;
-    //NeighbourMatrix matrix(n, m, false);
+    std::cin >> n >> m; 
+    //NeighbourMatrix matrix(n, m);
     AdjacencyList Alist(n);
     while (std::cin >> o >> p) {
-        //matrix.add_incidence(o, p);
-        Alist.add_edge(o, p);
+        //matrix.add_incidence(p, o);
+        Alist.add_arc(p, o);
     }
     //AdjacencyList Alist(matrix);
     //Alist.DFS();
     //matrix.DFS();
-    Alist.BFS(0,n-1);
+    //Alist.BFS(0,n-1);
     //Alist.display();
     //std::cout << '\n';
     //matrix.display();
+    //matrix.Khan_topology();
+    Alist.DFS_topology();
+
 }
 
