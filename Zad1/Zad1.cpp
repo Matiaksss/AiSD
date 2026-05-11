@@ -1,6 +1,38 @@
 ﻿#include <iostream>
 #include <vector>
 enum colors {WHITE, GRAY, BLACK};
+template <typename T>
+class FIFO {
+    struct Node {
+        T data;
+        Node* next;
+    };
+    Node* start, *end;
+
+public:
+    FIFO() : start(nullptr), end(nullptr) {}
+    void push(T value) {
+        Node* append = new Node{ value, nullptr };
+        if (start == nullptr) {
+            start = end = append;
+        }
+        else {
+            end->next = append;
+            end = append;
+        }
+    }
+    T pop() {
+        //if (start == nullptr) return;
+        Node* temp = start;
+        T data = temp->data;
+        start = start->next;
+        if (start == nullptr) end = nullptr;
+        delete temp;
+        return data;
+    }
+    bool isEmpty() { return start == nullptr; }
+
+};
 
 class NeighbourMatrix {
     int vertexes;
@@ -126,6 +158,31 @@ protected:
         }
         V[v] = BLACK;
     }
+public:
+    void BFS(int start, int end) {
+        std::vector<colors> V(vertexes, WHITE);
+        V[start] = GRAY;
+        FIFO<int> queue;
+        std::vector<int> lenghts(vertexes, 1);
+        queue.push(start);
+        while (!queue.isEmpty()) {
+            int v = queue.pop();
+            for (int i = 0; i < list.at(v).size(); i++) {
+                int u = list.at(v).at(i);
+                if (V[u] == WHITE) {
+                    lenghts[u] = lenghts[v]+1;
+                    if (u == end) {
+                        std::cout << lenghts[u];
+                        return;
+                    }
+                    V[u] = GRAY;
+                    queue.push(u);
+                }
+            }
+            V[v] = BLACK;
+        }
+        std::cout<<"IMPOSSIBLE";
+    }
 
 };
 
@@ -133,17 +190,18 @@ protected:
 
 int main()
 {
-    int n, m;
+    int n, m, o, p;
     std::cin >> n >> m;
-    NeighbourMatrix matrix(n, m, false);
-    //AdjacencyList Alist(n);
-    while (std::cin >> n >> m) {
-        matrix.add_incidence(n, m);
-        //Alist.add_edge(n, m);
+    //NeighbourMatrix matrix(n, m, false);
+    AdjacencyList Alist(n);
+    while (std::cin >> o >> p) {
+        //matrix.add_incidence(o, p);
+        Alist.add_edge(o, p);
     }
     //AdjacencyList Alist(matrix);
     //Alist.DFS();
-    matrix.DFS();
+    //matrix.DFS();
+    Alist.BFS(0,n-1);
     //Alist.display();
     //std::cout << '\n';
     //matrix.display();
